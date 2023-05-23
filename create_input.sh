@@ -1,6 +1,7 @@
 # !/bin/bash
 
 if [ $# != 2 ] || [ $2 -le 0 ]; then 
+    echo "Wrong arguments"
     exit 0
 fi
 
