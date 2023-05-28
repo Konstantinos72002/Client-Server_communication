@@ -7,6 +7,7 @@
 #include <list>
 #include <stack>
 #include <map>
+#include <set>
 #include <unistd.h>
 #include <stdlib.h>
 #include <sys/wait.h>
@@ -23,5 +24,6 @@
 #include <fstream>
 #include <sstream>
 
-#include "function_headers.h"
 using namespace std;
+#include "function_headers.h"
+#include "global.h"

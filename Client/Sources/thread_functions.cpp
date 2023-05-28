@@ -1,9 +1,11 @@
 #include "headers.h"
 
 void* thread_func(void* arguments) {
-
+    int i;
+    char buf[256];
     total_arguments args = (total_arguments)arguments;
     vote v = args->voteptr;
+    string voterName = v->name + " " + v->surname;
     client_arguments cargs = args->clientArgsptr;
     int portnum = cargs->portNum;
     string serverName = cargs->serverName;
@@ -26,17 +28,30 @@ void* thread_func(void* arguments) {
     server.sin_family = AF_INET;
     memcpy(&server.sin_addr, rem->h_addr, rem->h_length);
     server.sin_port = htons(portnum);
+
     if (connect(sock, serverptr, sizeof(server)) < 0) {
         perror("connect");
         exit(1);
     }
-    // char* buffer = new char[1024];
-    // if (write(sock, buffer, 1024) < 0) {
-    //     perror("write");
-    //     exit(1);
-    // }
+    int len = voterName.length() + 1;
+    if(write(sock,voterName.c_str(),len) == -1) {
+        perror("write");
+        exit(1);
+    }
 
-    // delete[] buffer;
+    char* b = new char[256];
+    if(read(sock,b,sizeof(buf)) == -1) {
+        perror("file read\n");
+        exit(1);
+    }
+
+    if(strcmp(b,"SEND VOTE PLEASE") == 0) {
+        if(write(sock,v->party.c_str(),sizeof(v->party.c_str())) == -1) {
+            perror("write");
+            exit(1);
+        }
+    }
+    delete b;
     close(sock);
     return NULL;
 }

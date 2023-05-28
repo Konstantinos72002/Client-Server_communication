@@ -6,6 +6,7 @@ int main(int argc, char* argv[]) {
         cerr << "Wrong arguments" << endl;
         exit(1);
     }
+
     string a(argv[4]);
     string b(argv[5]);
     server_arguments args = new Server_Arguments;

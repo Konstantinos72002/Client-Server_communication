@@ -1,5 +1,5 @@
 #include "headers.h"
-using namespace std;
+
 struct Server_Arguments
 {
     int portnum;
@@ -10,3 +10,12 @@ struct Server_Arguments
 } typedef *server_arguments;
 
 void *master(void*);
+
+void* worker(void*);
+
+void insert_to_buffer(int,int);
+
+int get_from_buffer();
+
+// true if have aleready vote
+bool insert_to_set(char*);

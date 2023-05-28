@@ -1,8 +1,7 @@
 #include "headers.h"
 
-void child_server(int newsock);
-
 void* master(void* args) {
+
     server_arguments arg = (server_arguments)args;
     int portnum = arg->portnum;
     int numWorkerthreads = arg->numWorkerthreads;
@@ -10,6 +9,12 @@ void* master(void* args) {
     string poll_log = arg->poll_log;
     string poll_stats = arg->poll_stats;
     
+    pthread_t *worker_threads = new pthread_t[numWorkerthreads];
+
+    for(int i=0;i<numWorkerthreads;i++) {
+        pthread_create(&worker_threads[i], NULL,&worker,(void*)&poll_log);
+    }
+
     int mastersock,clientsock;
 
     struct sockaddr_in server, client;
@@ -23,10 +28,9 @@ void* master(void* args) {
         exit(1);
     }
     
-    server.sin_family = AF_INET; /* Internet domain */
+    server.sin_family = AF_INET;
     server.sin_addr.s_addr = htonl(INADDR_ANY);
-    cout << server.sin_addr.s_addr << endl;
-    server.sin_port = htons(portnum); /* The given port */
+    server.sin_port = htons(portnum);
    
     if (bind(mastersock, serverptr, sizeof(server)) < 0) {
         perror("bind");
@@ -37,39 +41,30 @@ void* master(void* args) {
         perror("listen");
         exit(1);
     }
+    
     printf("Listening for connections to port %d\n", portnum);
     
-    while (1) { 
-        cout << "here" << endl;
+    while (1) {
         clientlen = sizeof(client);
         
         if ((clientsock = accept(mastersock, clientptr, &clientlen)) < 0) {
             perror("accept");
             exit(1);
         }
+
+        insert_to_buffer(clientsock,bufferSize);
         
         if ((rem = gethostbyaddr((char *) &client.sin_addr.s_addr, sizeof(client.sin_addr.s_addr), client.sin_family)) == NULL) {
             perror("gethostbyaddr"); 
             exit(1);
         }
 
-        printf("Accepted connection from %s\n", rem->h_name);
-        switch (fork()) { /* Create child for serving client */
-            case -1: /* Error */
-                perror("fork"); break;
-            case 0: /* Child process */
-                close(mastersock); child_server(clientsock);
-            exit(0);
-            default: /* Parent process */
-                wait(NULL);
-                close(clientsock);
-        }
-            // close(clientsock); /* parent closes socket to client */
+        close(clientsock);
     }
-}
 
-void child_server(int newsock) {
-    cout << "newsock: " << newsock << endl;
-    return;
+    for(int i=0;i<numWorkerthreads;i++) {
+        pthread_join(worker_threads[i],NULL);
+    }
+    delete worker_threads;
+    return NULL;
 }
-    

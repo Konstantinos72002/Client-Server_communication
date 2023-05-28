@@ -35,7 +35,7 @@ int main(int argc, char* argv[]) {
         targs->clientArgsptr= args;
         targs->voteptr = v;
         pthread_create(&thread, NULL, thread_func, (void*)targs);
-        pthread_join(thread,NULL);
+        sleep(2);
     }
 
     for (auto t : threads) {
