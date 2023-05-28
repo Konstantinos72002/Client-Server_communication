@@ -1,10 +1,8 @@
-SRC_DIR := Sources
-OBJ_DIR := Objects
-SRC_FILES := $(wildcard $(SRC_DIR)/*.cpp)
-OBJ_FILES := $(patsubst $(SRC_DIR)/%.cpp,$(OBJ_DIR)/%.o,$(SRC_FILES))
+compile_Server:
+	$(MAKE) -C Server -w --no-print-directory
 
-poller: $(OBJ_FILES)
-	g++  -o $@ $^
+compile_Client:
+	$(MAKE) -C Client -w --no-print-directory
 
-$(OBJ_DIR)/%.o: $(SRC_DIR)/%.cpp
-	g++  -c -o $@ $<
+
+compile_all: compile_Server compile_Client
