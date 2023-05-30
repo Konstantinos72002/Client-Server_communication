@@ -2,14 +2,20 @@
 
 void* master(void* args) {
 
+    sigset_t mask;
+    sigemptyset(&mask);
+    sigaddset(&mask, SIGINT);
+    pthread_sigmask(SIG_UNBLOCK, &mask, NULL);
+
     server_arguments arg = (server_arguments)args;
     int portnum = arg->portnum;
     int numWorkerthreads = arg->numWorkerthreads;
     int bufferSize = arg->bufferSize;
     string poll_log = arg->poll_log;
     string poll_stats = arg->poll_stats;
-    
-    pthread_t *worker_threads = new pthread_t[numWorkerthreads];
+    file = poll_stats;
+
+    worker_threads = new pthread_t[numWorkerthreads];
 
     for(int i=0;i<numWorkerthreads;i++) {
         pthread_create(&worker_threads[i], NULL,&worker,(void*)&poll_log);
@@ -52,19 +58,16 @@ void* master(void* args) {
             exit(1);
         }
 
-        insert_to_buffer(clientsock,bufferSize);
+        if(insert_to_buffer(clientsock,bufferSize) == -1) {
+            return NULL;
+        }
         
+        pthread_cond_signal(&cvar_noempty);
         if ((rem = gethostbyaddr((char *) &client.sin_addr.s_addr, sizeof(client.sin_addr.s_addr), client.sin_family)) == NULL) {
             perror("gethostbyaddr"); 
             exit(1);
         }
-
-        close(clientsock);
     }
 
-    for(int i=0;i<numWorkerthreads;i++) {
-        pthread_join(worker_threads[i],NULL);
-    }
-    delete worker_threads;
     return NULL;
 }

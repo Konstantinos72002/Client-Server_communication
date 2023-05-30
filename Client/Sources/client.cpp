@@ -6,6 +6,7 @@ int main(int argc, char* argv[]) {
         cerr << "Wrong arguments" << endl;
         exit(1);
     }
+
     string a(argv[1]);
     string b(argv[3]);
     client_arguments args = new Client_Arguments;
@@ -19,35 +20,40 @@ int main(int argc, char* argv[]) {
     vector<vote> votes;
     vector<total_arguments> targs_vector;
     while(getline(file, line)) {
-        vote v = new Vote;
-        votes.push_back(v);
 
+        vote v = new Vote;
         istringstream iss(line);
         iss >> v->name;
         iss >> v->surname;
         iss >> v->party;
-        
-        pthread_t thread;
-        threads.push_back(thread);
+        votes.push_back(v);
 
+        pthread_t thread;
+        
         total_arguments targs = new Total_Arguments;
-        targs_vector.push_back(targs);
         targs->clientArgsptr= args;
         targs->voteptr = v;
-        pthread_create(&thread, NULL, thread_func, (void*)targs);
-        sleep(2);
-    }
+        targs_vector.push_back(targs);
 
-    for (auto t : threads) {
-        pthread_join(t,NULL);
+        pthread_create(&thread, nullptr, thread_func, targs);
+        threads.push_back(thread);
     }
-    delete args;
+    
+    for (pthread_t& thread : threads) {
+        if (pthread_join(thread, nullptr) != 0) {
+            std::cerr << "Failed to join a thread." << std::endl;
+        }
+    }
+    
     for (auto vote : votes) {
         delete vote;
     }
+    
     for (auto t : targs_vector) {
         delete t;
     }
+
+    delete(args);
     
     return 0;
 }

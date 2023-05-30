@@ -1,8 +1,7 @@
 #include "headers.h"
 
 void* thread_func(void* arguments) {
-    int i;
-    char buf[256];
+
     total_arguments args = (total_arguments)arguments;
     vote v = args->voteptr;
     string voterName = v->name + " " + v->surname;
@@ -20,6 +19,8 @@ void* thread_func(void* arguments) {
         exit(1);
     }
     
+    // cout << " daino " << sock << endl;
+    
     if ((rem = gethostbyname(serverName.c_str())) == NULL) {
         herror("gethostbyname");
         exit(1);
@@ -33,17 +34,30 @@ void* thread_func(void* arguments) {
         perror("connect");
         exit(1);
     }
+
+    char a[256];
+    if(read(sock,a,sizeof(a)) == -1) {
+        perror("file read\n");
+        exit(1);
+    }
+
+    // send name please
+    // cout << "pthread id: " << " " << pthread_self() << " " << a << endl;
+
     int len = voterName.length() + 1;
     if(write(sock,voterName.c_str(),len) == -1) {
         perror("write");
         exit(1);
     }
 
-    char* b = new char[256];
-    if(read(sock,b,sizeof(buf)) == -1) {
+    // already voted || send vote please
+    char b[256];
+    if(read(sock,b,sizeof(b)) == -1) {
         perror("file read\n");
         exit(1);
     }
+
+    // cout << "pthread id: " << " " << pthread_self() << " " << b << endl;
 
     if(strcmp(b,"SEND VOTE PLEASE") == 0) {
         if(write(sock,v->party.c_str(),sizeof(v->party.c_str())) == -1) {
@@ -51,7 +65,18 @@ void* thread_func(void* arguments) {
             exit(1);
         }
     }
-    delete b;
-    close(sock);
+
+    char c[256];
+    if (read(sock,c,sizeof(c)) < 0) {
+        perror("read");
+        exit(1);
+    }
+
+    // cout << "pthread id: " << " " << pthread_self() << " " << c << endl;
+
+    // shutdown(sock,SHUT_RDWR);
+
+    // close(sock);
+    pthread_exit(NULL);
     return NULL;
 }

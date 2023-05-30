@@ -17,7 +17,6 @@ while [ $a -ne 0 ];
 do
     random_line=$((1 + RANDOM % num_lines))
     random_name=$(sed -n "${random_line}p" "$1")
-
     LENGTH1=$((RANDOM % 10 + 3))
     STRING1=""
     LENGTH2=$((RANDOM % 10 + 3))
