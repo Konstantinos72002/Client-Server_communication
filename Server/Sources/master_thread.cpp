@@ -43,7 +43,7 @@ void* master(void* args) {
         exit(1);
     }
 
-    if (listen(mastersock, bufferSize) < 0) { 
+    if (listen(mastersock, 10000) < 0) { 
         perror("listen");
         exit(1);
     }
@@ -51,22 +51,18 @@ void* master(void* args) {
     printf("Listening for connections to port %d\n", portnum);
     
     while (1) {
+        
         clientlen = sizeof(client);
         
         if ((clientsock = accept(mastersock, clientptr, &clientlen)) < 0) {
-            perror("accept");
-            exit(1);
+            cout << endl << "End connection" << endl;
+            return NULL;
         }
 
         if(insert_to_buffer(clientsock,bufferSize) == -1) {
             return NULL;
         }
-        
-        pthread_cond_signal(&cvar_noempty);
-        if ((rem = gethostbyaddr((char *) &client.sin_addr.s_addr, sizeof(client.sin_addr.s_addr), client.sin_family)) == NULL) {
-            perror("gethostbyaddr"); 
-            exit(1);
-        }
+
     }
 
     return NULL;

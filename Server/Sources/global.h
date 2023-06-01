@@ -14,5 +14,7 @@ extern pthread_cond_t cvar_noempty;
 extern pthread_cond_t cvar_nofull;
 extern pthread_mutex_t voters_mtx;
 extern pthread_mutex_t votes_mtx;
+extern pthread_mutex_t file_mtx;
+extern pthread_mutex_t main_mtx;
 extern string file;
 #endif // GLOBAL_H

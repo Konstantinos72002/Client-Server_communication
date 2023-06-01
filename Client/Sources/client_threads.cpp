@@ -45,6 +45,7 @@ void* thread_func(void* arguments) {
     // cout << "pthread id: " << " " << pthread_self() << " " << a << endl;
 
     int len = voterName.length() + 1;
+    
     if(write(sock,voterName.c_str(),len) == -1) {
         perror("write");
         exit(1);
@@ -60,7 +61,8 @@ void* thread_func(void* arguments) {
     // cout << "pthread id: " << " " << pthread_self() << " " << b << endl;
 
     if(strcmp(b,"SEND VOTE PLEASE") == 0) {
-        if(write(sock,v->party.c_str(),sizeof(v->party.c_str())) == -1) {
+        int len = v->party.length() + 1;
+        if(write(sock,v->party.c_str(),len) == -1) {
             perror("write");
             exit(1);
         }
@@ -72,11 +74,6 @@ void* thread_func(void* arguments) {
         exit(1);
     }
 
-    // cout << "pthread id: " << " " << pthread_self() << " " << c << endl;
-
-    // shutdown(sock,SHUT_RDWR);
-
-    // close(sock);
     pthread_exit(NULL);
     return NULL;
 }

@@ -1,7 +1,7 @@
 #include "headers.h"
 
 void* worker(void* file) {
-
+    
     pthread_setcancelstate(PTHREAD_CANCEL_ENABLE, NULL);
     pthread_setcanceltype(PTHREAD_CANCEL_DEFERRED, NULL);
 
@@ -14,13 +14,13 @@ void* worker(void* file) {
     string file_name_s2 = *file_name_s;
     char file_name[256];
     strcpy(file_name, file_name_s2.c_str());
+
     while(1) {
-     
+
         int clientsock = get_from_buffer();
         if(clientsock == -1) {
             return NULL;
         }
-        pthread_cond_signal(&cvar_nofull);
         
         if(write(clientsock,"SEND NAME PLEASE",sizeof("SEND NAME PLEASE")) == -1) {
             perror("write");
@@ -52,7 +52,7 @@ void* worker(void* file) {
                 perror("file read\n");
                 exit(1);
             }
-
+            
             insert_to_map(party);
 
             FILE *fp = fopen(file_name, "a");
@@ -60,10 +60,15 @@ void* worker(void* file) {
                 perror("fopen");
                 exit(1);
             }
-            
+
+
+            pthread_mutex_lock(&file_mtx);
+
             fprintf(fp,"%s %s\n",name, party);
             fclose(fp);
 
+            pthread_mutex_unlock(&file_mtx);
+            
             int totalLength = strlen("VOTE for") + strlen(party) + strlen("RECORDED") + 1;
             char message[totalLength];
             strcat(message,"VOTE for ");

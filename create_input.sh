@@ -1,6 +1,6 @@
 # !/bin/bash
 
-if [ $# != 2 ] || [ $2 -le 0 ] || [ $1 != "politicalParties.txt" ]; then 
+if [ $# != 2 ] || [ $2 -le 0 ] || [ $1 != "political_parties.txt" ]; then 
     echo "Wrong arguments"
     exit 0
 fi

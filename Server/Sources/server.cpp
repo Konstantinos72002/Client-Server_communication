@@ -29,9 +29,14 @@ int main(int argc, char* argv[]) {
     args->poll_stats = b;
 
     pthread_create(&master_thread, NULL,&master,(void*)args);
+
     pthread_join(master_thread,NULL);
 
+    // pthread_mutex_lock(&main_mtx);
+    // pthread_mutex_destroy(&main_mtx);
     delete args;
 
+    cout << "yea" << endl; 
+    
     return 0;
 }

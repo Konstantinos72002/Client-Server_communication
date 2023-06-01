@@ -8,7 +8,7 @@ if [ ! -e "$1" ]; then
 fi 
 
 names_array=()
-
+> temp_file
 exec < "$1"
 
 while read line 
@@ -39,10 +39,14 @@ do
         fi
     fi
 
-    > pollerResultsFile
+    > temp_file
     for key in "${!parties_map[@]}"
     do
         value="${parties_map[$key]}"
-        echo "Party: $key, Votes: $value" >> pollerResultsFile
+        echo "Party: $key, Votes: $value" >> temp_file
     done
 done
+
+sort -t $'\n' temp_file >> pollerResultsFile
+
+rm temp_file
