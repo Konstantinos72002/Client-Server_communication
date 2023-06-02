@@ -15,6 +15,13 @@ void* master(void* args) {
     string poll_stats = arg->poll_stats;
     file = poll_stats;
 
+    FILE *flog;
+    flog = fopen(poll_log.c_str(), "w");
+    fclose(flog);
+    FILE *fstats;
+    fstats = fopen(poll_stats.c_str(), "w");
+    fclose(fstats);
+
     worker_threads = new pthread_t[numWorkerthreads];
 
     for(int i=0;i<numWorkerthreads;i++) {
