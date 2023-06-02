@@ -32,11 +32,7 @@ int main(int argc, char* argv[]) {
 
     pthread_join(master_thread,NULL);
 
-    // pthread_mutex_lock(&main_mtx);
-    // pthread_mutex_destroy(&main_mtx);
     delete args;
-
-    cout << "yea" << endl; 
     
     return 0;
 }

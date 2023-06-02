@@ -123,8 +123,6 @@ void signalHandler(int signum) {
 
     delete[] worker_threads;
     
-    // pthread_mutex_unlock(&main_mtx);
-    cout << "done" << endl;
     return;
 }
 
