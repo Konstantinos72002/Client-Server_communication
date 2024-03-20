@@ -4,7 +4,7 @@ SRC_FILES := $(wildcard $(SRC_DIR)/*.cpp)
 OBJ_FILES := $(patsubst $(SRC_DIR)/%.cpp,$(OBJ_DIR)/%.o,$(SRC_FILES))
 
 ../poller: $(OBJ_FILES)
-	g++ -g -o $@ $^ -lpthread
+	g++ -o $@ $^ -lpthread
 
 $(OBJ_DIR)/%.o: $(SRC_DIR)/%.cpp
-	g++ -g -c -o $@ $<
+	g++ -c -o $@ $<
